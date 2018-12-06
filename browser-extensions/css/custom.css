@@ -1,0 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400');
+
+.reveal code {
+  font-family: 'IBM Plex Mono', monospace;
+}

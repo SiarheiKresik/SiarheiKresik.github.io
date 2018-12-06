@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>Browser extensions</title>
+
+    <link rel="stylesheet" href="css/reveal.css" />
+    <link rel="stylesheet" href="css/theme/black.css" />
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/monokai-sublime.css" />
+
+    <!-- custom css -->
+    <link rel="stylesheet" href="css/custom.css" />
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match(/print-pdf/gi)
+        ? 'css/print/pdf.css'
+        : 'css/print/paper.css';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- title -->
+        <section>
+          <h1>Browser extensions</h1>
+          <br />
+          <small><a href="https://github.com/SiarheiKresik" rel="author">Siarhiej Kresik</a></small>
+          <small>Dec, 2018</small>
+          <aside class="notes">
+            Hello. I’d like to talk to you today about browser extensions.
+          </aside>
+        </section>
+
+        <!-- What are browser extensions? -->
+        <section>
+          <section>
+            <h2>What are browser extensions?</h2>
+            <aside class="notes">So what are browser extensions?</aside>
+          </section>
+          <section data-markdown>
+            <textarea data-template>
+              ### From the user point of view
+              <br/>
+              small programs that can be used to:
+              <br/><br/>
+              * modify the existing functionality <!-- .element: class="fragment fade-in" -->
+              * add new features to sites and a browser itself <!-- .element: class="fragment fade-in" -->
+
+              Note:
+              From the user point of view extensions are small programs
+              which can be used to modify the existing functionality
+              and add new features to a browser and sites
+            </textarea>
+          </section>
+          <section data-markdown>
+            <textarea data-template>
+              ### From the developer point of view
+              <br/>
+              * technically an extension is a zipped bundle of
+              files—HTML, CSS, JavaScript, images, and anything else you
+              need <!-- .element: class="fragment fade-in" -->
+              * programming extensions is like programming web
+              pages <!-- .element: class="fragment fade-in" -->
+
+              Note:
+              From the developer point of view an extension is a zip file,
+              which can contain html, css, javascript files, images and anything else you need.  
+              This days programming extensions is just like programming web pages.
+            </textarea>
+          </section>
+        </section>
+
+        <!-- architecture -->
+        <section>
+          <h2>Architecture of extensions</h2>
+          <aside class="notes">Now let’s dive deeper into how extensions are build.</aside>
+        </section>
+
+        <!-- manifest.json -->
+        <section>
+          <section>
+            <h3>1. manifest.json</h3>
+            <aside class="notes">
+              Every single extension must have a JSON-formatted manifest file.
+            </aside>
+          </section>
+
+          <section data-markdown>
+            <textarea data-template>
+              #### manifest.json
+              <br />
+              * has a meta information about an extension <!-- .element: class="fragment fade-in" -->
+              * describes a structure of an extension <!-- .element: class="fragment fade-in" -->
+              * must be present in every extension <!-- .element: class="fragment fade-in" -->
+
+              Note:
+              This is where we define a meta information about the extension
+              and describe a structure of the extension.
+            </textarea>
+          </section>
+
+          <section>
+            <h4>manifest.json</h4>
+            <br />
+            <figure class="fragment fade-left">
+              <figcaption>mandatory keys:</figcaption>
+              <pre><code>
+                {
+                  "manifest_version": 2,
+                  "name": "My Extension",
+                  "version": "1.0",
+                  "author": "Author Name",
+                }
+              </code></pre>
+            </figure>
+            <aside class="notes">
+              It has mandatory keys as manifest version, name and version of the extension, …
+            </aside>
+          </section>
+
+          <section>
+            <h4>manifest.json</h4>
+            <br />
+            <figure class="fragment fade-left">
+              <figcaption>optional keys:</figcaption>
+              <pre><code>
+                {
+                  "browser_action": {},
+                  "page_action": {},
+                  "content_scripts": {},
+                  "background": {},
+                  "permissions": {},
+                }
+              </code></pre>
+            </figure>
+            <aside class="notes">
+              … and optional keys. Here you can see the most important ones.
+            </aside>
+          </section>
+        </section>
+
+        <!-- background scripts -->
+        <section>
+          <section>
+            <h3>2. background scripts</h3>
+            <aside class="notes">
+              The second important part of extensions is background scripts.
+            </aside>
+          </section>
+
+          <section data-markdown>
+            <textarea data-template>
+            #### background scripts
+            <br />
+              * run in the context of a special page called a background page <!-- .element: class="fragment fade-in" -->
+              * contain main logic, event routing between parts of the extension <!-- .element: class="fragment fade-in" -->
+              * can use any of the APIs, as long as an extension has the necessary permissions <!-- .element: class="fragment fade-in" -->
+              * can’t directly access the content of web pages <!-- .element: class="fragment fade-in" -->
+
+              Note:
+              They contain main logic of the extension
+              and  run in the context of special pages called background pages.
+              In background scripts you can use any of the APIs as long as your extension has the necessary permissions.
+              Background scripts do not get direct access to web pages.
+            </textarea>
+          </section>
+
+          <section>
+            <h4>background scripts</h4>
+            <br />
+            <figure class="fragment fade-left">
+              <figcaption>manifest.json:</figcaption>
+              <pre><code>
+                {
+                  "background": {
+                    "scripts": [
+                      "utils.js",
+                      "browseraction.js",
+                      "listeners.js"
+                    ]
+                  }
+                }
+              </code></pre>
+            </figure>
+            <aside class="notes">
+              You can include a background script using the `background` key in the manifest file.
+            </aside>
+          </section>
+        </section>
+
+        <!-- content scripts -->
+        <section>
+          <section>
+            <h3>3. content scripts</h3>
+            <aside class="notes">
+              Along with background scripts an extension may have content scripts.
+            </aside>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #### content scripts
+              <br />
+              * run in the context of a particular web page <!-- .element: class="fragment fade-in" -->
+              * can access and modify the page’s DOM <!-- .element: class="fragment fade-in" -->
+              * cannot see JavaScript variables defined by page scripts <!-- .element: class="fragment fade-in" -->
+              * don’t have direct access to the variables and functions in the background scripts <!-- .element: class="fragment fade-in" -->
+              * get access to a small subset of the APIs <!-- .element: class="fragment fade-in" -->
+
+              Note:
+              Content scripts run in the context of a particular web page.
+              Use them if you want to access or modify the page’s DOM.
+              Content scripts live in an isolated world,
+              they don’t have direct access to page or background scripts.
+              Content scripts can access only a small subset of the APIs.
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #### content scripts
+              <br />
+              How to load a content script into a web page:
+              * programmatically using API  <!-- .element: class="fragment fade-in" -->
+              <pre><code>   tabs.executeScript();</code></pre> <!-- .element: class="fragment fade-left" -->
+                * inject as code <!-- .element: class="fragment fade-in" -->
+                * inject an entire file <!-- .element: class="fragment fade-in" -->
+
+              Note:
+              How can you load a content script into a web page?
+              If you need to run a content script on specific occasions
+              you can do it programmatically from background scripts using APIs.
+            </script>
+          </section>
+
+          <section>
+            <h4>content scripts</h4>
+            <br />
+            <p>How to load a content script into a web page:</p>
+            <ul class="fragment fade-in">
+              <li>declaratively</li>
+            </ul>
+            <figure class="fragment fade-left">
+              <figcaption>manifest.json</figcaption>
+              <pre><code>
+                {
+                  "content_scripts": [
+                    {
+                      "matches": ["*://*.epam.by/*"],
+                      "js": ["contentScript.js"]
+                    }
+                  ]
+                }
+            </code></pre>
+            </figure>
+            <aside class="notes">
+              When you want to run a content script automatically on specified pages register it in
+              the manifest file under the `content_scripts` key.
+            </aside>
+          </section>
+        </section>
+
+        <!-- UI -->
+        <section>
+          <section>
+            <h3>4. UI</h3>
+            <aside class="notes">
+              Your extension can include various user interface components.
+            </aside>
+          </section>
+
+          <section>
+            <h4>UI</h4>
+            <br />
+            <div data-markdown>
+              <textarea data-template>
+                * button <!-- .element: class="fragment fade-in" -->
+                  * browser action
+                  * page action
+                * options page <!-- .element: class="fragment fade-in" -->
+                * context menu items <!-- .element: class="fragment fade-in" -->
+                * commands <!-- .element: class="fragment fade-in" -->
+                * etc. <!-- .element: class="fragment fade-in" -->
+
+                Note:
+                a button,
+                an option page, 
+                context menu items
+                and other browser specific UI elements.
+              </textarea>
+            </div>
+          </section>
+
+          <section>
+            <h4>UI</h4>
+            <br />
+            <figure class="fragment fade-left">
+              <figcaption>manifest.json</figcaption>
+              <pre><code>
+                {
+                  "browser_action": {
+                    "default_icon": {
+                      "16": "images/icon16.png",
+                      "32": "images/icon32.png"
+                    },
+                    "default_title": "Google Mail",
+                    "default_popup": "popup.html"
+                  }
+                }
+              </code></pre>
+            </figure>
+            <aside class="notes">
+              To add an UI element you have to declare it in the manifest file. For example here we
+              define a button in the browser toolbar with an icon, title and popup
+            </aside>
+          </section>
+
+          <section>
+            <h4>UI</h4>
+            <br />
+            <div data-markdown>
+              <textarea data-template>
+                * UI elements can use all the same APIs as your background scripts
+                
+                Note:
+                Unlike a normal web page, your UI elements can use
+                all the same privileged APIs
+                as your background scripts. 
+              </textarea>
+            </div>
+          </section>
+        </section>
+
+        <!-- API -->
+        <section>
+          <section><h2>API</h2></section>
+          <section data-markdown>
+            <textarea data-template>
+              #### API
+              <br />
+              * you can access the APIs using: <!-- .element: class="fragment fade-in" -->
+                * the browser namespace (Firefox and MS Edge) <!-- .element: class="fragment fade-in" -->
+                * the chrome namespace (Chrome and Opera) <!-- .element: class="fragment fade-in" -->
+              * many of the APIs are asynchronous and use callbacks <!-- .element: class="fragment fade-in" -->
+              * Firefox supports promise-based asynchronous APIs <!-- .element: class="fragment fade-in" -->
+              * not all browsers support all the APIs <!-- .element: class="fragment fade-in" -->
+                ([MDN link](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Browser_support_for_JavaScript_APIs))
+
+              Note:
+              Most extensions APIs of major browsers are similar,
+              but as usual not identical.  
+              For example  
+              in Firefox and Microsoft Edge you can access the APIs
+              using the `browser` namespace,  
+              in Chrome and Opera using the `chrome` namespace.  
+              Many of the APIs are asynchronous and use callbacks
+              but Firefox supports promises as well.  
+              Not all browsers support all the APIs,
+              for more details you can visit the mozilla site.
+            </textarea>
+          </section>
+        </section>
+
+        <!-- Permissions -->
+        <section>
+          <section>
+            <h2>Permissions</h2>
+            <aside class="notes">
+              To use most APIs they must be registered in the `permissions` field of the manifest.
+            </aside>
+          </section>
+          <section data-markdown>
+            <textarea data-template>
+              #### Permissions 
+              <br />
+              * host permissions  <!-- .element: class="fragment fade-in" -->
+              * API permissions  <!-- .element: class="fragment fade-in" -->
+              * the activeTab permission <!-- .element: class="fragment fade-in" -->
+
+              Note:
+              There are:  
+              host permissions — URLs for which the extension get extra privileges,  
+              APIs permissions — which APIs your extension can use,  
+              activeTab permission — the extension get extra privileges for the active tab only
+            </textarea>
+          </section>
+
+          <section>
+            <h4>Permissions</h4>
+            <br />
+            <figure class="fragment fade-left">
+              <figcaption>manifest.json</figcaption>
+              <pre><code>
+                {
+                  "permissions": [
+                    "bookmarks",
+                    "tabs",
+                    "*://developer.mozilla.org/*",
+                    "*://developer.chrome.com/*"
+                  ]
+                }
+              </code></pre>
+            </figure>
+          </section>
+        </section>
+
+        <!-- Communication -->
+        <section>
+          <section>
+            <h2>Communication</h2>
+            <aside class="notes">
+              Background, content and page scripts run in isolated environments. If you want to
+              communicate between them use message passing.
+            </aside>
+          </section>
+
+          <section>
+            <h4>Communication</h4>
+            <br />
+            <ol class="fragment fade-in">
+              <li>content scripts ←→ background scripts</li>
+            </ol>
+            <figure class="fragment fade-left">
+              <figcaption><li>one time messages</li></figcaption>
+              <pre><code>
+              runtime.sendMessage(); // in content script
+              tabs.sendMessage();    // in background script
+              runtime.onMessage;     // receive a message
+              </code></pre>
+            </figure>
+            <figure class="fragment fade-left">
+              <figcaption><li>long-lived connection (runtime.Port)</li></figcaption>
+              <pre><code>
+              runtime.connect(); // in content script
+              tabs.connect();    // in background script
+              runtime.onConnect; // receive a message
+              </code></pre>
+            </figure>
+            <aside class="notes">
+              <p>
+                There are two basic patterns for communicating between the content scripts and
+                background scripts:
+              </p>
+              <p>
+                If you only need to send a single message to another part of your extension, you
+                should use the simplified runtime.sendMessage and tabs.sendMessage APIs.
+              </p>
+              <p>Or you can open a longer-lived channel using runtime.connect or tabs.connect.</p>
+            </aside>
+          </section>
+
+          <section>
+            <h4>Communication</h4>
+            <br />
+            <div class="fragment fade-in">
+              <ol start="2">
+                <li>content scripts ←→ page scripts</li>
+              </ol>
+              <pre class="fragment fade-left"><code>
+                  window.postMessage();
+                  window.addEventListener();
+              </code></pre>
+            </div>
+            <ol start="3">
+              <li class="fragment fade-in">extension ←→ extension</li>
+              <li class="fragment fade-in">extension ←→ web pages</li>
+              <li class="fragment fade-in">extension ←→ native applications</li>
+            </ol>
+            <div data-markdown><textarea data-template> </textarea></div>
+            <aside class="notes">
+              <p>
+                Contents scripts can communicate with the page scripts through the shared DOM using
+                window.postMessage and window.addEventListener APIs.
+              </p>
+              <p>
+                There are APIs that allow extension communicate with other extensions, web pages or
+                even exchange messages with native applications.
+              </p>
+            </aside>
+          </section>
+        </section>
+
+        <!-- Summary -->
+        <section>
+          <section>
+            <h2>Summary</h2>
+            <aside class="notes">And now it is time to recap</aside>
+          </section>
+          <br />
+          <section data-markdown>
+            <textarea data-template>
+              #### Summary
+              <br />
+              1. manifest.json <!-- .element: class="fragment fade-in" -->
+              2. background scripts <!-- .element: class="fragment fade-in" -->
+              3. content scripts <!-- .element: class="fragment fade-in" -->
+              4. UI elements <!-- .element: class="fragment fade-in" -->
+              5. communication by message passing <!-- .element: class="fragment fade-in" -->
+
+              Note:
+              1. Firstly, write the manifest file and provide it with all needed information.
+              2. Write background files that will have full access to the APIs.
+              3. Write content scripts if you want to access and modify the page's DOM.
+              4. Add UI elements.
+              5. Communicate between parts of your extension
+              and with the outside world by message passing.
+            </textarea>
+          </section>
+        </section>
+
+        <!-- Publishing and distributing -->
+        <section>
+          <section>
+            <h2>Publishing<br />and<br />distributing</h2>
+          </section>
+          <section>
+            <h4>Publishing and distributing</h4>
+            <br />
+            <p>Every browser has its own way to publish extensions. Read online documentation.</p>
+            <aside class="notes">
+              <p>Once you have developed an extension you can publish it.</p>
+              <p>Every browser has its own way to do this.</p>
+              <p>Just read online documentation.</p>
+            </aside>
+          </section>
+        </section>
+
+        <!-- Links -->
+        <section>
+          <section><h2>Links</h2></section>
+          <section data-markdown>
+            <textarea data-template>
+              #### Links
+              <br />
+              1. [https://developer.mozilla.org](https://developer.mozilla.org/en-US/Add-ons/WebExtensions)
+              2. [https://dev.opera.com](https://dev.opera.com/extensions)
+              3. [https://developer.chrome.com](https://developer.chrome.com/extensions)
+              4. [https://docs.microsoft.com](https://docs.microsoft.com/en-us/microsoft-edge/extensions)
+
+              Note:
+              Here are some useful links for those who want to create an extension.
+            </textarea>
+          </section>
+        </section>
+
+        <!-- PS -->
+        <section>
+          <section>
+            <h3>P.S.<br />My favorite extensions</h3>
+            <br />
+            <ul>
+              <li>uBlock Origin</li>
+              <li>Stylebot/Stylus</li>
+              <li>Vimium</li>
+              <li>Enhancer for YouTube</li>
+              <li>GSConnect</li>
+            </ul>
+            <aside class="notes">And here are my favorite extensions.</aside>
+          </section>
+        </section>
+
+        <!-- Thanks -->
+        <section>
+          <section><h1>Thanks</h1></section>
+        </section>
+        <aside class="notes">Thanks.</aside>
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+      // More info about config & dependencies:
+      // - https://github.com/hakimel/reveal.js#configuration
+      // - https://github.com/hakimel/reveal.js#dependencies
+      Reveal.initialize({
+        slideNumber: true,
+        dependencies: [
+          { src: 'plugin/markdown/marked.js' },
+          { src: 'plugin/markdown/markdown.js' },
+          { src: 'plugin/notes/notes.js', async: true },
+          {
+            src: 'plugin/highlight/highlight.js',
+            async: true,
+            callback: function() {
+              hljs.initHighlightingOnLoad();
+            }
+          }
+        ]
+      });
+    </script>
+  </body>
+</html>
